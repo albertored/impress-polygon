@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+%html{:lang => "en"}
+  %head
+    %meta{ :charset => "utf-8"}
+    %title impress.js - Polygonal slides
+    %link{ :rel => "stylesheet", :href => "css/polygon.css"}
+
+  %body.impress-not-supported
+
+    #impress
+  
+      - N = 18        # number of edges
+      - L = 1000.0    # length of one edge in pixel
+
+      - opacity = 0.85
+      -# - c = ["#1b998b", "#2d3047", "#fffd82", "#ff9b71", "#e84855"]
+      - c = ["rgba(38, 84, 124, #{opacity})", "rgba(239, 71, 111, #{opacity})", "rgba(255, 209, 102, #{opacity})", "rgba(6, 214, 160, #{opacity})", "rgba(255, 252, 249, #{opacity})"]
+
+      - points = Array.new
+      - sx = 0.0
+      - sy = 0.0
+      - R = L/(2.0*Math::sin(Math::PI/N))
+    
+      - (1..N).each do |n|
+        - x1 = R * Math::sin(2.0*Math::PI*n/N)
+        - y1 = R * Math::cos(2.0*Math::PI*n/N)
+        - x2 = R * Math::sin(2.0*Math::PI*(n+1)/N)
+        - y2 = R * Math::cos(2.0*Math::PI*(n+1)/N)
+        - if n==1
+          - sx = -(x1+x2)/2.0
+          - sy = -(y1+y2)/2.0
+        - points.push([(x1+x2)/2.0 + sx, (y1+y2)/2.0 + sy])
+
+      - points.each_with_index do |p, i|
+        .step{  :id => "id#{i+1}",
+                "data-x" => "#{p[0].to_i}", "data-y" => "0", "data-z" => "#{p[1].to_i}",
+                "data-rotate-y" => "#{format('%.0f', (360.0/N)*(i+1.5))}",
+                "data-scale" => "1",
+                :style => "background-color: #{c[i % c.length]}"}
+          %h1 #{i+1}
+
+      .step#overview{"data-x" => "0", "data-y" => "0", "data-z" => "0", "data-rotate-y" => "#{format('%.0f', (360.0/N)*(1.5))}", "data-scale" => "2.5"}
+
+    %script{ :src => "js/impress.js"}
+    %script
+      impress().init();
